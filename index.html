@@ -327,13 +327,14 @@
 
     let ticking = false;
     let blocksOffsetTop = 0;
+    let headerHeight = 0;
 
     function updateCounter() {
         if (!ticking) {
             window.requestAnimationFrame(() => {
                 const scrollY = window.scrollY || window.pageYOffset;
-                // Calculate wealth based on how much of the blocks-container has passed the header (80px)
-                const relativeScroll = Math.max(0, scrollY - blocksOffsetTop + 80);
+                // Calculate wealth based on how much of the blocks-container has passed the header
+                const relativeScroll = Math.max(0, scrollY - blocksOffsetTop + headerHeight);
                 
                 const rowsScrolled = relativeScroll / currentBlockSize;
                 let currentWealth = Math.floor(rowsScrolled * ROW_VALUE);
@@ -357,7 +358,13 @@
 
     function init() {
         updateBlockSize();
-        blocksOffsetTop = blocksContainer.offsetTop;
+        const header = document.querySelector('header');
+        headerHeight = header.offsetHeight;
+        
+        // Use getBoundingClientRect + scrollY for a more robust absolute offset
+        const rect = blocksContainer.getBoundingClientRect();
+        blocksOffsetTop = rect.top + window.scrollY;
+        
         generateMilestones();
         updateCounter();
     }
